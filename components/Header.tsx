@@ -1,6 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
+import { ICONS } from '../constants'
+import DropdownList from './DropdownList'
 
 const Header = ({ subHeader, title, userImg }: SharedHeaderProps) => {
   return (
@@ -10,10 +12,10 @@ const Header = ({ subHeader, title, userImg }: SharedHeaderProps) => {
                 {userImg && (
                     <div>
                     <Image
-                        src={userImg || '/assets/images/dummy.jpg'}
+                        src={userImg}
                         alt='user'
-                        width={66}
-                        height={66}
+                        width={50}
+                        height={50}
                         className='rounded-full'
                     />
                         </div>
@@ -33,7 +35,31 @@ const Header = ({ subHeader, title, userImg }: SharedHeaderProps) => {
                     />
                     <span>Upload a video</span>
                 </Link>
+                <div className='record'>
+                <button className='primary-btn'>
+                    <Image 
+                        src={ICONS.record}
+                        alt='record'
+                        width={16}
+                        height={16}
+                        className=''
+                        />
+                    <span>Record a video</span>
+                </button>
+                </div>
             </aside>
+        </section>
+        <section className='search-filter'>
+                <div className='search'>
+                    <input type="text" placeholder='Search for videos, tags, folders...' />
+                    <Image 
+                        src='/assets/icons/search.svg'
+                        alt='search'
+                        width={16}
+                        height={16}
+                    />
+                </div>
+                <DropdownList />
         </section>
     </header>
   )
