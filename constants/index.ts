@@ -47,6 +47,97 @@ export const DEFAULT_RECORDING_CONFIGS = {
   videoBitsPerSecond: 2500000,
 };
 
+export const dummyCards = [
+  {
+    id: "1",
+    title: "Snapchat Message",
+    thumbnail: "/assets/samples/thumbnail (1).png",
+    createdAt: new Date("2025-06-30"),
+    userImg: "/assets/images/jason.png",
+    username: "Jason",
+    views: 85,
+    visibility: "public",
+    duration: 156
+  },
+  {
+    id: "2",
+    title: "Team Standup Recap",
+    thumbnail: "/assets/samples/thumbnail (2).png",
+    createdAt: new Date("2025-06-28"),
+    userImg: "/assets/images/sarah.png",
+    username: "Sarah",
+    views: 120,
+    visibility: "private",
+    duration: 210
+  },
+  {
+    id: "3",
+    title: "Product Launch Highlights",
+    thumbnail: "/assets/samples/thumbnail (3).png",
+    createdAt: new Date("2025-06-25"),
+    userImg: "/assets/images/michael.png",
+    username: "Michael",
+    views: 340,
+    visibility: "public",
+    duration: 320
+  },
+  {
+    id: "4",
+    title: "Customer Feedback Session",
+    thumbnail: "/assets/samples/thumbnail (4).png",
+    createdAt: new Date("2025-06-22"),
+    userImg: "/assets/images/emily.png",
+    username: "Emily",
+    views: 56,
+    visibility: "private",
+    duration: 180
+  },
+  {
+    id: "5",
+    title: "Marketing Plan Overview",
+    thumbnail: "/assets/samples/thumbnail (5).png",
+    createdAt: new Date("2025-06-20"),
+    userImg: "/assets/images/david.png",
+    username: "David",
+    views: 210,
+    visibility: "public",
+    duration: 245
+  },
+  {
+    id: "6",
+    title: "Bug Fix Walkthrough",
+    thumbnail: "/assets/samples/thumbnail (6).png",
+    createdAt: new Date("2025-06-18"),
+    userImg: "/assets/images/lisa.png",
+    username: "Lisa",
+    views: 77,
+    visibility: "public",
+    duration: 132
+  },
+  {
+    id: "7",
+    title: "UI Design Critique",
+    thumbnail: "/assets/samples/thumbnail (7).png",
+    createdAt: new Date("2025-06-15"),
+    userImg: "/assets/images/alex.png",
+    username: "Alex",
+    views: 98,
+    visibility: "private",
+    duration: 200
+  },
+  {
+    id: "8",
+    title: "Feature Request Discussion",
+    thumbnail: "/assets/samples/thumbnail (8).png",
+    createdAt: new Date("2025-06-12"),
+    userImg: "/assets/images/jessica.png",
+    username: "Jessica",
+    views: 134,
+    visibility: "public",
+    duration: 275
+  }
+];
+
 // export const MAX_VIDEO_SIZE = 500 * 1024 * 1024;
 // export const MAX_THUMBNAIL_SIZE = 10 * 1024 * 1024;
 
