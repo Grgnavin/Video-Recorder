@@ -1,11 +1,15 @@
 "use server"
 import { headers } from 'next/headers';
 import { auth } from '../auth';
-import { apiFetch, getEnv, withErrorHandling } from './../utils';
+import { apiFetch, doesTitleMatch, getEnv, withErrorHandling, getOrderByClause } from './../utils';
 import { BUNNYY } from '../../constants';
 import { db } from '../../drizzle/client';
-import { videos } from '../../drizzle/schema';
+import { user, videos } from '../../drizzle/schema';
 import { revalidatePath } from 'next/cache';
+import aj from '../arcjet';
+import { fixedWindow, request } from '@arcjet/next';
+import { strict } from 'assert';
+import { and, eq, or, sql } from 'drizzle-orm';
 
 const VIDEO_STREAM_BASE_URL = BUNNYY.STREAM_BASE_URL;
 const THUMBNAIL_STORAGE_BASE_URL = BUNNYY.STORAGE_BASE_URL;
@@ -24,8 +28,39 @@ const getSessionUserId = async(): Promise<string> => {
     return session?.user?.id;
 }
 
+const buildVideoWithUserQuery = () => {
+  return db
+    .select({
+      video: videos,
+      user: { id: user.id, name: user.name, image: user.image }
+    })
+    .from(videos)
+    .leftJoin(user, eq(videos.userId, user.id))
+    .$dynamic();               // allow extra .where/.orderBy
+};
+
+
 const revalidatePaths = (paths: string[]) => {
     paths.forEach((path) => revalidatePath(path));
+}
+
+const validatewithArcjet = async(fingerPrint: string) => {
+    const rateLimit = aj.withRule(
+        fixedWindow({
+            mode: 'LIVE',
+            window: '1m',
+            max: 2,
+            characteristics: ['fingerprint']
+        })
+    );
+    const req = await request();
+
+    const decision = await rateLimit.protect(req, { fingerprint: fingerPrint });
+
+    if(decision.isDenied()) {
+        throw new Error("Rate limit exceeded");
+    }
+
 }
 
 //server action
@@ -66,6 +101,7 @@ export const getThumbnailUploadUrl = withErrorHandling(async(videoId: string) =>
 
 export const saveVideoDetails = withErrorHandling(async(videoDetails: VideoDetails) => {
     const userId = await getSessionUserId();
+    await validatewithArcjet(userId);
     await apiFetch(
         `${VIDEO_STREAM_BASE_URL}/${BUNNY_LIBRARY_ID}/videos/${videoDetails.videoId}`,
         {
@@ -87,4 +123,57 @@ export const saveVideoDetails = withErrorHandling(async(videoDetails: VideoDetai
     revalidatePaths(['/']);
     return { videoId: videoDetails.videoId }
 });
+
+
+
+export const getAllVideos = withErrorHandling(
+  async (
+    searchQuery: string = "",
+    sortFilter?: string,
+    pageNumber: number = 1,
+    pageSize: number = 8
+  ) => {
+    // session & “who can see” filter
+    const session = await auth.api.getSession({ headers: await headers() });
+    const currentUserId = session?.user?.id;
+
+    const canSeeTheVideos = or(
+      eq(videos.visibility, "public"),
+      eq(videos.userId, currentUserId!)
+    );
+
+    const whereCondition = searchQuery.trim()
+      ? and(canSeeTheVideos, doesTitleMatch(videos, searchQuery))
+      : canSeeTheVideos;
+
+    // total-count query
+    const [{ totalCount }] = await db
+      .select({ totalCount: sql<number>`count(*)` })
+      .from(videos)
+      .where(whereCondition);
+
+    const totalVideos = Number(totalCount ?? 0);
+    const totalPages  = Math.ceil(totalVideos / pageSize);
+
+    const videoRecords = await buildVideoWithUserQuery()   // ← call it
+      .where(whereCondition)
+      .orderBy(
+        sortFilter
+          ? getOrderByClause(sortFilter)
+          : sql`${videos.createdAt} DESC`
+      )
+      .limit(pageSize)
+      .offset((pageNumber - 1) * pageSize);
+
+    return {
+      videos: videoRecords,
+      pagination: {
+        currentPage: pageNumber,
+        totalPages,
+        totalVideos,
+        pageSize
+      }
+    };
+  }
+);
 
