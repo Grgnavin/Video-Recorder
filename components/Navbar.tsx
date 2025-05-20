@@ -5,10 +5,11 @@ import { useRouter } from 'next/navigation';
 import React from 'react'
 import { authClient } from '../lib/auth-client';
 
-const user = {};
 
 const Navbar = () => {
     const router = useRouter();
+    const { data: session } = authClient.useSession();
+    const user = session?.user; 
     const Logout =async () => {
         try {
             await authClient.signOut();
@@ -32,9 +33,9 @@ const Navbar = () => {
             {
                 user && (
                     <figure>
-                        <button onClick={() => router.push('/profile/123456')}>
+                        <button onClick={() => router.push(`/profile/${user?.id}`)}>
                             <Image
-                                src='/assets/images/dummy.jpg'
+                                src={user.image || ""}
                                 alt='user'
                                 width={36}
                                 height={36}
