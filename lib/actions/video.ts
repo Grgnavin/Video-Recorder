@@ -8,7 +8,6 @@ import { user, videos } from '../../drizzle/schema';
 import { revalidatePath } from 'next/cache';
 import aj from '../arcjet';
 import { fixedWindow, request } from '@arcjet/next';
-import { strict } from 'assert';
 import { and, eq, or, sql } from 'drizzle-orm';
 
 const VIDEO_STREAM_BASE_URL = BUNNYY.STREAM_BASE_URL;
