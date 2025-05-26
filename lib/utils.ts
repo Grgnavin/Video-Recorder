@@ -150,7 +150,6 @@ export const getMediaStreams = async (
     video: DEFAULT_VIDEO_CONFIG,
     audio: true,
   });
-
   const hasDisplayAudio = displayStream.getAudioTracks().length > 0;
   let micStream: MediaStream | null = null;
 
