@@ -1,5 +1,5 @@
 import React from 'react'
-import { getVideoById } from '../../../../lib/actions/video';
+import { getTranscriptByVideoId, getVideoById } from '../../../../lib/actions/video';
 import { redirect } from 'next/navigation';
 import VideoPlayer from '../../../../components/VideoPlayer';
 import VideoDetailHeader from '../../../../components/VideoDetailHeader';
@@ -9,7 +9,7 @@ const VideoPage =async ({ params }: Params) => {
   const { videoId} = await params;
   const { video, user } = await getVideoById(videoId);
   if(!video) redirect('/404');
-  console.log(user?.image);
+  const transcript = await getTranscriptByVideoId(videoId);
   
   return (
     <main className='wrapper page'>
@@ -26,13 +26,14 @@ const VideoPage =async ({ params }: Params) => {
               />
             </div>
             <VideoInfo
-              transcript={}
+              transcript={transcript}
               title={video.title}
               createdAt={video.createdAt}
               description={video.description}
               videoId={videoId}
               videoUrl={video.videoUrl}
             />
+            
         </section>
     </main>
   )
