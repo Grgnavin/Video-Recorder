@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useRef, useState } from 'react'
 import { cn, createIframeLink } from '../lib/utils'
 import { initialVideoState } from '../constants';

@@ -138,7 +138,7 @@ export const getAllVideos = withErrorHandling(
 
     const canSeeTheVideos = or(
       eq(videos.visibility, "public"),
-      eq(videos.userId, currentUserId!)
+      // eq(videos.userId, currentUserId!)
     );
 
     const whereCondition = searchQuery.trim()
