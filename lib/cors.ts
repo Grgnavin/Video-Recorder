@@ -13,10 +13,11 @@ export function handleCORS(req: NextRequest) {
   if (allowedOrigins.includes(origin)) {
     res.headers.set("Access-Control-Allow-Origin", origin);
   }
+    res.headers.set("Access-Control-Allow-Origin", "https://video-recorder-opteb0ka-grgnavins-projects.vercel.app");
+    res.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.headers.set("Access-Control-Allow-Credentials", "true"); // if using cookies
 
-  res.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.headers.set("Access-Control-Allow-Credentials", "true");
 
   return res;
 }
