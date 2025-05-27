@@ -274,3 +274,16 @@ export const getVideoProcessingStatus = withErrorHandling(
     };
   }
 );
+
+export const updateVideoVisibility = withErrorHandling(
+  async (videoId: string, visibility: Visibility) => {
+    await validatewithArcjet(videoId);
+    await db
+      .update(videos)
+      .set({ visibility, updatedAt: new Date() })
+      .where(eq(videos.videoId, videoId));
+
+    revalidatePaths(["/", `/video/${videoId}`]);
+    return {};
+  }
+);

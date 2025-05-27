@@ -5,7 +5,9 @@ import React, { useEffect, useState } from 'react'
 import { daysAgo } from '../lib/utils'
 import ImageWithFallback from './ImageFallBack'
 import { authClient } from '../lib/auth-client'
-import { deleteVideo } from '../lib/actions/video'
+import { deleteVideo, updateVideoVisibility } from '../lib/actions/video'
+import DropdownList from './DropdownList'
+import { visibilities } from '../constants'
 
 const VideoDetailHeader = ({ 
     title, 
@@ -20,6 +22,10 @@ const VideoDetailHeader = ({
 }: VideoDetailHeaderProps) => {
     const[isDeleting, setIsDeleting] = useState<boolean>(false);
     const[copied, setCopied] = useState<boolean>(false);
+    const [visibilityState, setVisibilityState] = useState<Visibility>(
+    visibility as Visibility
+  );
+    const [isUpdating, setisUpdating] = useState<boolean>(false);
     const router = useRouter();
     const { data: session } = authClient.useSession();
     const userId = session?.user.id;
@@ -43,12 +49,48 @@ const VideoDetailHeader = ({
         }
     }
 
+    const handleVisibilityChange = async (option: string) => {
+      if (option!== visibilityState) {
+        setisUpdating(true);
+        try {
+          await updateVideoVisibility(videoId, option as Visibility);
+          setVisibilityState(option as Visibility);
+        } catch (error) {
+          console.error("Error updating visibility:", error);
+        }finally{
+          setisUpdating(false); 
+        }
+      }
+    }
+
+    const TriggerVisibility = (
+    <div className="visibility-trigger">
+      <div>
+        <Image
+          src="/assets/icons/eye.svg"
+          alt="Views"
+          width={16}
+          height={16}
+          className="mt-0.5"
+        />
+        <p>{visibilityState}</p>
+      </div>
+      <Image
+        src="/assets/icons/arrow-down.svg"
+        alt="Arrow Down"
+        width={16}
+        height={16}
+      />
+    </div>
+  );
+
     useEffect(() => {
         const changedChecked = setTimeout(() => {
             if(copied) setCopied(false);
         }, 3000)
         return () => clearTimeout(changedChecked);
-    }, [copied])
+    }, [copied]);
+
     return (
     <header className="detail-header">
       <aside className="user-info">
@@ -90,7 +132,7 @@ const VideoDetailHeader = ({
             >
               {isDeleting ? "Deleting..." : "Delete video"}
             </button>
-            {/* <div className="bar" />
+            <div className="bar" />
             {isUpdating ? (
               <div className="update-stats">
                 <p>Updating...</p>
@@ -102,8 +144,8 @@ const VideoDetailHeader = ({
                 onOptionSelect={handleVisibilityChange}
                 triggerElement={TriggerVisibility}
               />
-            )} */}
-          </div> 
+            )}
+          </div>
         )}
       </aside>
     </header>
